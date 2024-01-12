@@ -1,0 +1,28 @@
+# MentEdu
+
+## How to run
+### 1. Install dependencies
+```bash
+go mod download
+go get -tags 'postgres' -u github.com/golang-migrate/migrate/v4/cmd/migrate
+```
+
+### 2. Run migrations
+```bash
+make migrate_up DATABASE_URL=<database_url>
+```
+
+### 3. Setup
+```bash
+make setup
+```
+
+### 4. Build
+```bash
+make compile-server
+```
+
+### 5. Run
+```bash
+./bin/server/main
+```
