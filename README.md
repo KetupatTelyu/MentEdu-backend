@@ -24,12 +24,17 @@ make migrate_up DATABASE_URL=<database_url>
 make setup
 ```
 
-### 4. Build
+### 4. Generate Keys
+```bash
+make generate-keys
+```
+
+### 5. Build
 ```bash
 make compile-server
 ```
 
-### 5. Run
+### 6. Run
 ```bash
 ./bin/server/main
 ```
