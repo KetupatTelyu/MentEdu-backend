@@ -1,0 +1,5 @@
+.idea
+.env
+bin/server/stuff
+media/users/user/profile/*
+keys/*
