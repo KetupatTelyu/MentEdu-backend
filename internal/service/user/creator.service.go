@@ -60,6 +60,8 @@ func (uc *UserCreator) CreateUser(ctx context.Context, name, email, password, ph
 
 	user := model.NewUser(uuid.New(), name, email, pass, phoneNumber, photo, sql.NullTime{Time: dob}, "system")
 
+	user.UserRole = model.NewUserRole(uuid.New(), user.ID, 2, "system")
+
 	if err := uc.userRepo.Create(ctx, user); err != nil {
 		return nil, err
 	}

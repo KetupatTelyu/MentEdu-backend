@@ -18,8 +18,9 @@ type ArticleCreator struct {
 	cloudStorage utils.CloudStorage
 }
 
-func NewArticleCreator(articleRepo repository.ArticleRepositoryUseCase, cloudStorage utils.CloudStorage) ArticleCreatorUsecase {
+func NewArticleCreator(cfg config.Config, articleRepo repository.ArticleRepositoryUseCase, cloudStorage utils.CloudStorage) ArticleCreatorUsecase {
 	return &ArticleCreator{
+		cfg:          cfg,
 		articleRepo:  articleRepo,
 		cloudStorage: cloudStorage,
 	}
@@ -28,12 +29,17 @@ func NewArticleCreator(articleRepo repository.ArticleRepositoryUseCase, cloudSto
 func (ac *ArticleCreator) CreateArticle(ctx context.Context, title, body, slug, image string, categoryID int, createdBy string) (*model.Article, error) {
 	article := model.NewArticle(title, body, slug, image, createdBy)
 
-	article.ArticleCategory = &model.ArticleCategory{
-		ArticleID:  article.ID,
-		CategoryID: categoryID,
+	article, err := ac.articleRepo.Create(ctx, article)
+
+	if err != nil {
+		return nil, err
 	}
 
-	if err := ac.articleRepo.Create(ctx, article); err != nil {
+	article.ArticleCategory = model.NewArticleCategory(article.ID, categoryID, createdBy)
+
+	err = ac.articleRepo.Update(ctx, article)
+
+	if err != nil {
 		return nil, err
 	}
 

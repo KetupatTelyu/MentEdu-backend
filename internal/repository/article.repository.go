@@ -11,11 +11,12 @@ import (
 )
 
 type ArticleRepositoryUseCase interface {
-	Create(ctx context.Context, article *model.Article) error
+	Create(ctx context.Context, article *model.Article) (*model.Article, error)
 	Update(ctx context.Context, article *model.Article) error
 	Delete(ctx context.Context, id int) error
 	GetAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Article, error)
 	GetById(ctx context.Context, id int) (*model.Article, error)
+	GetBySlug(ctx context.Context, slug string) (*model.Article, error)
 }
 
 type ArticleRepository struct {
@@ -26,11 +27,11 @@ func NewArticleRepository(db *gorm.DB) ArticleRepositoryUseCase {
 	return &ArticleRepository{db}
 }
 
-func (r *ArticleRepository) Create(ctx context.Context, article *model.Article) error {
+func (r *ArticleRepository) Create(ctx context.Context, article *model.Article) (*model.Article, error) {
 	if err := r.db.WithContext(ctx).Model(&model.Article{}).Create(&article).Error; err != nil {
-		return errors.Wrap(err, "error creating article")
+		return nil, errors.Wrap(err, "error creating article")
 	}
-	return nil
+	return article, nil
 }
 
 func (r *ArticleRepository) Update(ctx context.Context, article *model.Article) error {
@@ -105,6 +106,14 @@ func (r *ArticleRepository) GetById(ctx context.Context, id int) (*model.Article
 	var article model.Article
 	if err := r.db.WithContext(ctx).Model(&model.Article{}).First(&article, id).Error; err != nil {
 		return nil, errors.Wrap(err, "error getting article by id")
+	}
+	return &article, nil
+}
+
+func (r *ArticleRepository) GetBySlug(ctx context.Context, slug string) (*model.Article, error) {
+	var article model.Article
+	if err := r.db.WithContext(ctx).Model(&model.Article{}).Where("slug = ?", slug).First(&article).Error; err != nil {
+		return nil, errors.Wrap(err, "error getting article by slug")
 	}
 	return &article, nil
 }

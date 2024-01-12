@@ -1,5 +1,8 @@
 # MentEdu
 
+### Api Collection
+![img.png](assets/img.png)
+
 ## How to run
 ### 1. Install dependencies
 ```bash
