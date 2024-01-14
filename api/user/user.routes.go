@@ -92,3 +92,14 @@ func UserAuthHTTPHandler(cfg config.Config, router *gin.Engine, as auth2.AuthSer
 		api.POST("/login", hndlr.Login)
 	}
 }
+
+func UserProfileHTTPHandler(cfg config.Config, router *gin.Engine, uf userService.UserFinderUseCase, cloudStorage utils.CloudStorage) {
+	hndlr := user.NewUserFinderHandler(uf, cloudStorage)
+
+	api := router.Group("/api")
+
+	api.Use(middleware.Auth(cfg))
+	{
+		api.GET("/user/profile", hndlr.UserProfile)
+	}
+}

@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"log"
 	"mentedu-backend/common"
+	"mentedu-backend/internal/app/middleware"
 	userService "mentedu-backend/internal/service/user"
 	"mentedu-backend/resource"
 	"mentedu-backend/utils"
@@ -30,6 +31,19 @@ func (ufh *UserFinderHandler) FindUserById(c *gin.Context) {
 		c.JSON(400, common.ErrBadRequest)
 		return
 	}
+
+	user, err := ufh.userFinder.FindUser(c.Request.Context(), id)
+
+	if err != nil {
+		c.JSON(400, common.ErrBadRequest)
+		return
+	}
+
+	c.JSON(200, user)
+}
+
+func (ufh *UserFinderHandler) UserProfile(c *gin.Context) {
+	id := middleware.UserID
 
 	user, err := ufh.userFinder.FindUser(c.Request.Context(), id)
 

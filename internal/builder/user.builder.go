@@ -29,4 +29,5 @@ func BuildUserHandler(cfg config.Config, router *gin.Engine, db *gorm.DB) {
 	user2.UserDeleterHTTPHandler(cfg, router, ud, uf, cloudStorage)
 	user2.UserUpdaterHTTPHandler(cfg, router, up, uf, cloudStorage)
 	user2.UserRegisterHTTPHandler(cfg, router, uc, uf, cloudStorage)
+	user2.UserProfileHTTPHandler(cfg, router, uf, cloudStorage)
 }

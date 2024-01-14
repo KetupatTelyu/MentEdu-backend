@@ -1,5 +1,5 @@
 .idea
 .env
-bin/server/stuff
-media/users/user/profile/*
+bin/
+media/
 keys/*

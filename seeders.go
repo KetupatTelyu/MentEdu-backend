@@ -75,6 +75,22 @@ type RolePermission struct {
 	DeletedAt    *time.Time `gorm:"type:timestamptz"`
 }
 
+type Category struct {
+	ID        uint       `gorm:"primaryKey;autoIncrement"`
+	Name      string     `gorm:"type:varchar(128);not null"`
+	CreatedBy string     `gorm:"type:varchar(128)"`
+	UpdatedBy string     `gorm:"type:varchar(128)"`
+	DeletedBy string     `gorm:"type:varchar(128)"`
+	CreatedAt time.Time  `gorm:"type:timestamptz"`
+	UpdatedAt time.Time  `gorm:"type:timestamptz"`
+	DeletedAt *time.Time `gorm:"type:timestamptz"`
+}
+
+type ArticleCategory struct {
+	ArticleID  int `json:"article_id"`
+	CategoryID int `json:"category_id"`
+}
+
 func main() {
 	dsn := "postgres://localhost:5432/mentedudb?user=rahman&password=rahman&sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})

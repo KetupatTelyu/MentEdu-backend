@@ -1,11 +1,11 @@
 package model
 
 type Article struct {
-	ID              int              `json:"id" gorm:"primaryKey;autoIncrement"`
-	Title           string           `json:"title"`
-	Body            string           `json:"body"`
-	Image           string           `json:"image"`
-	Slug            string           `json:"slug"`
+	ID              int              `json:"id" form:"title" gorm:"primaryKey;autoIncrement"`
+	Title           string           `json:"title" form:"title"`
+	Body            string           `json:"body" form:"body" gorm:"type:text"`
+	Image           string           `json:"image" form:"image" gorm:"type:text"`
+	Slug            string           `json:"slug" form:"slug"`
 	ArticleCategory *ArticleCategory `json:"article_category"`
 	Auditable
 }
