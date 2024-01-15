@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"mentedu-backend/internal/service/article"
 	userService "mentedu-backend/internal/service/user"
+	"mentedu-backend/utils"
 	"strconv"
 )
 
@@ -34,7 +35,23 @@ func (adh *ArticleDeleterHandler) DeleteArticle(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"message": "Article deleted successfully",
-	})
+	c.JSON(200, utils.SuccessApiResponse("Article deleted successfully"))
+}
+
+func (adh *ArticleDeleterHandler) DeleteCategory(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
+
+	err = adh.articleDeleter.DeleteCategory(c.Request.Context(), id)
+
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
+
+	c.JSON(200, utils.SuccessApiResponse("Category deleted successfully"))
 }

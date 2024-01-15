@@ -53,5 +53,30 @@ func (ach *ArticleCreatorHandler) CreateArticle(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, a)
+	c.JSON(200, utils.SuccessApiResponse(a))
+}
+
+func (ach *ArticleCreatorHandler) CreateCategory(c *gin.Context) {
+	var request resource.CreateCategoryRequest
+
+	if err := c.ShouldBind(&request); err != nil {
+		c.JSON(400, common.ErrBadRequest)
+		return
+	}
+
+	user, err := ach.userFinder.FindUser(c, middleware.UserID)
+
+	if err != nil {
+		c.JSON(400, common.ErrBadRequest)
+		return
+	}
+
+	err = ach.articleCreatorUsecase.CreateCategory(c.Request.Context(), request.Name, user.Email)
+
+	if err != nil {
+		c.JSON(400, common.ErrBadRequest)
+		return
+	}
+
+	c.JSON(200, utils.SuccessApiResponse("Category created successfully"))
 }

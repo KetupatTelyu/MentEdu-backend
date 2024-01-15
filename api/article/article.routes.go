@@ -61,3 +61,55 @@ func ArticleDeleterHTTPHandler(cfg config.Config, router *gin.Engine, ad article
 		api.DELETE("/cms/article/:id", hndlr.DeleteArticle)
 	}
 }
+
+func CategoryCreatorHTTPHandler(cfg config.Config, router *gin.Engine, cc article.ArticleCreatorUsecase, uf userService.UserFinderUseCase, cloudStorage utils.CloudStorage) {
+	hndlr := article2.NewArticleCreatorHandler(cc, uf, cloudStorage)
+
+	api := router.Group("/api")
+
+	api.Use(middleware.Auth(cfg))
+	api.Use(middleware.Admin(cfg))
+
+	{
+		api.POST("/cms/category", hndlr.CreateCategory)
+	}
+}
+
+func CategoryFinderHTTPHandler(cfg config.Config, router *gin.Engine, cf article.ArticleFinderUsecase, uf userService.UserFinderUseCase, cloudStorage utils.CloudStorage) {
+	hndlr := article2.NewArticleFinder(cf)
+
+	api := router.Group("/api")
+
+	api.Use(middleware.Auth(cfg))
+
+	{
+		api.GET("/cms/category", hndlr.FindCategories)
+		api.GET("/cms/category/:id", hndlr.FindCategoryByID)
+	}
+}
+
+func CategoryUpdaterHTTPHandler(cfg config.Config, router *gin.Engine, cu article.ArticleUpdaterUsecase, uf userService.UserFinderUseCase, cloudStorage utils.CloudStorage) {
+	hndlr := article2.NewArticleUpdater(cu, uf, cloudStorage)
+
+	api := router.Group("/api")
+
+	api.Use(middleware.Auth(cfg))
+	api.Use(middleware.Admin(cfg))
+
+	{
+		api.PUT("/cms/category/:id", hndlr.UpdateCategory)
+	}
+}
+
+func CategoryDeleterHTTPHandler(cfg config.Config, router *gin.Engine, cd article.ArticleDeleterUsecase, uf userService.UserFinderUseCase, cloudStorage utils.CloudStorage) {
+	hndlr := article2.NewArticleDeleterHandler(cd, uf)
+
+	api := router.Group("/api")
+
+	api.Use(middleware.Auth(cfg))
+	api.Use(middleware.Admin(cfg))
+
+	{
+		api.DELETE("/cms/category/:id", hndlr.DeleteCategory)
+	}
+}

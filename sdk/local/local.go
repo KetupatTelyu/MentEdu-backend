@@ -18,10 +18,15 @@ func NewLocalStorage(basePath string) *LocalStorage {
 }
 
 func (ls *LocalStorage) UploadFile(file *multipart.FileHeader, folder string) (string, error) {
-	src, err := file.Open()
-	if err != nil {
-		return "", err
+	// create if not exist
+	if _, err := os.Stat(filepath.Join(ls.BasePath, folder)); os.IsNotExist(err) {
+		if err := os.MkdirAll(filepath.Join(ls.BasePath, folder), 0755); err != nil {
+			return "", err
+		}
 	}
+
+	src, err := file.Open()
+
 	defer src.Close()
 
 	destPath := filepath.Join(ls.BasePath, folder, file.Filename)

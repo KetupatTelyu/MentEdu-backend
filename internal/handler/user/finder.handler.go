@@ -8,6 +8,7 @@ import (
 	"mentedu-backend/internal/app/middleware"
 	userService "mentedu-backend/internal/service/user"
 	"mentedu-backend/resource"
+	"mentedu-backend/responses"
 	"mentedu-backend/utils"
 	"strconv"
 )
@@ -39,7 +40,18 @@ func (ufh *UserFinderHandler) FindUserById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, user)
+	role, err := ufh.userFinder.FindRole(c.Request.Context(), user.UserRole.RoleID)
+
+	if err != nil {
+		c.JSON(400, common.ErrBadRequest)
+		return
+	}
+
+	response := responses.FromUserModel(user)
+
+	response.Role = role.Name
+
+	c.JSON(200, response)
 }
 
 func (ufh *UserFinderHandler) UserProfile(c *gin.Context) {
@@ -52,7 +64,18 @@ func (ufh *UserFinderHandler) UserProfile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, user)
+	role, err := ufh.userFinder.FindRole(c.Request.Context(), user.UserRole.RoleID)
+
+	if err != nil {
+		c.JSON(400, common.ErrBadRequest)
+		return
+	}
+
+	response := responses.FromUserModel(user)
+
+	response.Role = role.Name
+
+	c.JSON(200, response)
 }
 
 func (ufh *UserFinderHandler) FindUsers(c *gin.Context) {
@@ -70,7 +93,23 @@ func (ufh *UserFinderHandler) FindUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, users)
+	var response []*responses.ProfileResponse
+
+	for _, user := range users {
+		role, err := ufh.userFinder.FindRole(c.Request.Context(), user.UserRole.RoleID)
+
+		if err != nil {
+			c.JSON(400, common.ErrBadRequest)
+			return
+		}
+
+		r := responses.FromUserModel(user)
+		r.Role = role.Name
+
+		response = append(response, r)
+	}
+
+	c.JSON(200, response)
 }
 
 func (ufh *UserFinderHandler) FindRoleById(c *gin.Context) {

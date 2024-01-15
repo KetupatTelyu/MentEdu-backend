@@ -29,13 +29,9 @@ func NewArticle(
 func (model *Article) MapUpdateFrom(from *Article) *map[string]interface{} {
 	if from == nil {
 		return &map[string]interface{}{
-			"title": model.Title,
-			"body":  model.Body,
-			"slug":  model.Slug,
-			"article_category": map[string]interface{}{
-				"id":          model.ArticleCategory.ArticleID,
-				"category_id": model.ArticleCategory.CategoryID,
-			},
+			"title":      model.Title,
+			"body":       model.Body,
+			"slug":       model.Slug,
 			"image":      model.Image,
 			"created_by": model.CreatedBy,
 			"updated_at": model.UpdatedAt,
@@ -54,13 +50,6 @@ func (model *Article) MapUpdateFrom(from *Article) *map[string]interface{} {
 
 	if model.Slug != from.Slug {
 		mapped["slug"] = from.Slug
-	}
-
-	if model.ArticleCategory.CategoryID != from.ArticleCategory.CategoryID {
-		mapped["article_category"] = map[string]interface{}{
-			"id":          from.ArticleCategory.ArticleID,
-			"category_id": from.ArticleCategory.CategoryID,
-		}
 	}
 
 	if model.Image != from.Image {

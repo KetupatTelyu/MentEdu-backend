@@ -10,15 +10,24 @@ type ArticleFinderUsecase interface {
 	FindByID(ctx context.Context, id int) (*model.Article, error)
 	FindAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Article, error)
 	FindBySlug(ctx context.Context, slug string) (*model.Article, error)
+
+	FindCategoryByID(ctx context.Context, id int) (*model.Category, error)
+	FindAllCategory(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Category, error)
+
+	FindArticleCategoryByArticleID(ctx context.Context, articleID int) ([]*model.ArticleCategory, error)
 }
 
 type ArticleFinder struct {
-	articleRepo repository.ArticleRepositoryUseCase
+	articleRepo         repository.ArticleRepositoryUseCase
+	categoryRepo        repository.CategoryRepositoryUseCase
+	articleCategoryRepo repository.ArticleCategoryRepositoryUseCase
 }
 
-func NewArticleFinder(articleRepo repository.ArticleRepositoryUseCase) ArticleFinderUsecase {
+func NewArticleFinder(articleRepo repository.ArticleRepositoryUseCase, categoryRepo repository.CategoryRepositoryUseCase, articleCategoryRepo repository.ArticleCategoryRepositoryUseCase) ArticleFinderUsecase {
 	return &ArticleFinder{
-		articleRepo: articleRepo,
+		articleRepo:         articleRepo,
+		categoryRepo:        categoryRepo,
+		articleCategoryRepo: articleCategoryRepo,
 	}
 }
 
@@ -50,4 +59,34 @@ func (af *ArticleFinder) FindBySlug(ctx context.Context, slug string) (*model.Ar
 	}
 
 	return article, nil
+}
+
+func (af *ArticleFinder) FindCategoryByID(ctx context.Context, id int) (*model.Category, error) {
+	category, err := af.categoryRepo.GetById(ctx, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return category, nil
+}
+
+func (af *ArticleFinder) FindAllCategory(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Category, error) {
+	categories, err := af.categoryRepo.GetAll(ctx, query, sort, order, limit, offset)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return categories, nil
+}
+
+func (af *ArticleFinder) FindArticleCategoryByArticleID(ctx context.Context, articleID int) ([]*model.ArticleCategory, error) {
+	articleCategories, err := af.articleCategoryRepo.GetByArticleID(ctx, articleID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return articleCategories, nil
 }

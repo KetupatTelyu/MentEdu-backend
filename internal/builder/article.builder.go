@@ -18,13 +18,15 @@ func BuildArticleHandler(cfg config.Config, router *gin.Engine, db *gorm.DB) {
 	pr := repository.NewPermissionRepository(db)
 	userRole := repository.NewUserRoleRepository(db)
 	rolePermission := repository.NewRolePermissionRepository(db)
+	cr := repository.NewCategoryRepository(db)
+	acr := repository.NewArticleCategoryRepository(db)
 
 	cloudStorage := local.NewLocalStorage(cfg.LocalStorage.BasePath)
 
-	as := article.NewArticleCreator(cfg, ar, cloudStorage)
-	af := article.NewArticleFinder(ar)
-	au := article.NewArticleUpdater(ar)
-	ad := article.NewArticleDeleter(ar)
+	as := article.NewArticleCreator(cfg, ar, cr, acr, cloudStorage)
+	af := article.NewArticleFinder(ar, cr, acr)
+	au := article.NewArticleUpdater(ar, cr)
+	ad := article.NewArticleDeleter(ar, cr, acr)
 
 	uf := userService.NewUserFinder(ur, rp, pr, userRole, rolePermission)
 
@@ -32,4 +34,8 @@ func BuildArticleHandler(cfg config.Config, router *gin.Engine, db *gorm.DB) {
 	article2.ArticleFinderHTTPHandler(cfg, router, af, uf, cloudStorage)
 	article2.ArticleUpdaterHTTPHandler(cfg, router, au, uf, cloudStorage)
 	article2.ArticleDeleterHTTPHandler(cfg, router, ad, uf, cloudStorage)
+	article2.CategoryCreatorHTTPHandler(cfg, router, as, uf, cloudStorage)
+	article2.CategoryFinderHTTPHandler(cfg, router, af, uf, cloudStorage)
+	article2.CategoryUpdaterHTTPHandler(cfg, router, au, uf, cloudStorage)
+	article2.CategoryDeleterHTTPHandler(cfg, router, ad, uf, cloudStorage)
 }

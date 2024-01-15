@@ -76,3 +76,37 @@ func (au *ArticleUpdater) UpdateArticle(c *gin.Context) {
 
 	c.JSON(200, newArticle)
 }
+
+func (au *ArticleUpdater) UpdateCategory(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
+
+	var request resource.UpdateCategoryRequest
+
+	if err := c.ShouldBind(&request); err != nil {
+		c.JSON(400, err)
+		return
+	}
+
+	user, err := au.userFinder.FindUser(c, middleware.UserID)
+
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
+
+	err = au.articleService.UpdateCategory(c.Request.Context(), id, request.Name, user.Email)
+
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Category updated successfully",
+	})
+}

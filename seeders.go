@@ -104,9 +104,15 @@ func main() {
 		log.Fatal(err)
 	}
 
+	id, err := uuid.Parse("50574f94-18b2-4f69-9933-5d1dc99bff3a")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Define the admin user and role
 	adminUser := User{
-		ID:          uuid.New(),
+		ID:          id,
 		Name:        "Admin",
 		Email:       "admin@example.com",
 		Password:    "adminpassword",
