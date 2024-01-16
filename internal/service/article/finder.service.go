@@ -15,6 +15,8 @@ type ArticleFinderUsecase interface {
 	FindAllCategory(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Category, error)
 
 	FindArticleCategoryByArticleID(ctx context.Context, articleID int) ([]*model.ArticleCategory, error)
+
+	FindArticleByCategoryID(ctx context.Context, categoryID int) ([]*model.Article, error)
 }
 
 type ArticleFinder struct {
@@ -89,4 +91,32 @@ func (af *ArticleFinder) FindArticleCategoryByArticleID(ctx context.Context, art
 	}
 
 	return articleCategories, nil
+}
+
+func (af *ArticleFinder) FindArticleByCategoryID(ctx context.Context, categoryID int) ([]*model.Article, error) {
+	articleCategories, err := af.FindArticleCategoryByArticleID(ctx, categoryID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var articleIDs []int
+
+	for _, articleCategory := range articleCategories {
+		articleIDs = append(articleIDs, articleCategory.ArticleID)
+	}
+
+	var articles []*model.Article
+
+	for _, articleID := range articleIDs {
+		article, err := af.articleRepo.GetById(ctx, articleID)
+
+		if err != nil {
+			return nil, err
+		}
+
+		articles = append(articles, article)
+	}
+
+	return articles, nil
 }

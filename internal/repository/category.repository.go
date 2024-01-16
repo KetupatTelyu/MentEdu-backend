@@ -50,7 +50,7 @@ func (repo *CategoryRepository) GetAll(ctx context.Context, query, sort, order s
 	q := repo.db.WithContext(ctx).Model(&model.Category{})
 
 	if query != "" {
-		q = q.Where("name LIKE ?", "%"+query+"%")
+		q = q.Where("name ILIKE ?", "%"+query+"%")
 	}
 
 	if sort != "" && order != "" {

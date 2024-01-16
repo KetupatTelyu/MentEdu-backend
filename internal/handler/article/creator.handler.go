@@ -7,6 +7,7 @@ import (
 	"mentedu-backend/internal/service/article"
 	userService "mentedu-backend/internal/service/user"
 	"mentedu-backend/resource"
+	"mentedu-backend/responses"
 	"mentedu-backend/utils"
 )
 
@@ -53,7 +54,9 @@ func (ach *ArticleCreatorHandler) CreateArticle(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, utils.SuccessApiResponse(a))
+	response := responses.NewResponse(a, 200, "success")
+
+	c.JSON(200, response)
 }
 
 func (ach *ArticleCreatorHandler) CreateCategory(c *gin.Context) {
@@ -78,5 +81,7 @@ func (ach *ArticleCreatorHandler) CreateCategory(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, utils.SuccessApiResponse("Category created successfully"))
+	response := responses.NewResponse(nil, 200, "success")
+
+	c.JSON(200, response)
 }

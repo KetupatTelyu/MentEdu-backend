@@ -5,6 +5,7 @@ import (
 	"mentedu-backend/internal/service/article"
 	"mentedu-backend/resource"
 	article2 "mentedu-backend/responses"
+	"net/http"
 	"strconv"
 )
 
@@ -33,7 +34,9 @@ func (af *ArticleFinder) FindArticleByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, article)
+	response := article2.NewResponse(article, http.StatusOK, "success")
+
+	c.JSON(200, response)
 }
 
 func (af *ArticleFinder) FindArticles(c *gin.Context) {
@@ -75,7 +78,9 @@ func (af *ArticleFinder) FindArticles(c *gin.Context) {
 		articleResponses = append(articleResponses, newArticle)
 	}
 
-	c.JSON(200, articleResponses)
+	response := article2.NewResponse(articleResponses, http.StatusOK, "success")
+
+	c.JSON(200, response)
 }
 
 func (af *ArticleFinder) FindArticleBySlug(c *gin.Context) {
@@ -106,7 +111,9 @@ func (af *ArticleFinder) FindCategoryByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, category)
+	response := article2.NewResponse(category, http.StatusOK, "success")
+
+	c.JSON(200, response)
 }
 
 func (af *ArticleFinder) FindCategories(c *gin.Context) {
@@ -124,5 +131,44 @@ func (af *ArticleFinder) FindCategories(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, categories)
+	response := article2.NewResponse(categories, http.StatusOK, "success")
+
+	c.JSON(200, response)
+}
+
+func (af *ArticleFinder) FindArticleByCategoryID(c *gin.Context) {
+	categoryID, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
+
+	articles, err := af.articleFinder.FindArticleByCategoryID(c.Request.Context(), categoryID)
+
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
+
+	var articleResponses []*article2.ArticleResponse
+
+	for _, article := range articles {
+		categoryName, err := af.articleFinder.FindCategoryByID(c.Request.Context(), categoryID)
+
+		if err != nil {
+			c.JSON(400, err)
+			return
+		}
+
+		newArticle := article2.FromArticle(article)
+
+		newArticle.Category = categoryName.Name
+
+		articleResponses = append(articleResponses, newArticle)
+	}
+
+	response := article2.NewResponse(articleResponses, http.StatusOK, "success")
+
+	c.JSON(200, response)
 }

@@ -82,7 +82,7 @@ func (repo *UserRepository) GetAll(ctx context.Context, query, sort, order strin
 	q := repo.db.WithContext(ctx).Preload("UserRole.Role").Model(&model.User{})
 
 	if query != "" {
-		q = q.Where("email LIKE ?", "%"+query+"%")
+		q = q.Where("email ILIKE ?", "%"+query+"%")
 	}
 
 	if sort != "" && order != "" {

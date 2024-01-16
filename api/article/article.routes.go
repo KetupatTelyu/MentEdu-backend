@@ -27,11 +27,15 @@ func ArticleFinderHTTPHandler(cfg config.Config, router *gin.Engine, af article.
 	hndlr := article2.NewArticleFinder(af)
 
 	api := router.Group("/api")
+	{
+		api.GET("/article", hndlr.FindArticles)
+		api.GET("/article/category/:id", hndlr.FindArticleByCategoryID)
+	}
 
 	api.Use(middleware.Auth(cfg))
-
 	{
 		api.GET("/cms/article", hndlr.FindArticles)
+		api.GET("/cms/article/category/:id", hndlr.FindArticleByCategoryID)
 		api.GET("/cms/article/:id", hndlr.FindArticleByID)
 	}
 }

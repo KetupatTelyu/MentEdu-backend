@@ -47,9 +47,11 @@ func (ufh *UserFinderHandler) FindUserById(c *gin.Context) {
 		return
 	}
 
-	response := responses.FromUserModel(user)
+	newUser := responses.FromUserModel(user)
 
-	response.Role = role.Name
+	newUser.Role = role.Name
+
+	response := responses.NewResponse(newUser, 200, "success")
 
 	c.JSON(200, response)
 }
@@ -71,20 +73,18 @@ func (ufh *UserFinderHandler) UserProfile(c *gin.Context) {
 		return
 	}
 
-	response := responses.FromUserModel(user)
+	newUser := responses.FromUserModel(user)
 
-	response.Role = role.Name
+	newUser.Role = role.Name
+
+	response := responses.NewResponse(newUser, 200, "success")
 
 	c.JSON(200, response)
 }
 
 func (ufh *UserFinderHandler) FindUsers(c *gin.Context) {
-	var request resource.QueryRequest
 
-	if err := c.ShouldBind(&request); err != nil {
-		c.JSON(400, common.ErrBadRequest)
-		return
-	}
+	request := resource.NewQueryRequest(c)
 
 	users, err := ufh.userFinder.FindAllUser(c.Request.Context(), request.Query, request.Sort, request.Order, request.Limit, request.Offset)
 
@@ -93,7 +93,7 @@ func (ufh *UserFinderHandler) FindUsers(c *gin.Context) {
 		return
 	}
 
-	var response []*responses.ProfileResponse
+	var resp []*responses.ProfileResponse
 
 	for _, user := range users {
 		role, err := ufh.userFinder.FindRole(c.Request.Context(), user.UserRole.RoleID)
@@ -106,8 +106,10 @@ func (ufh *UserFinderHandler) FindUsers(c *gin.Context) {
 		r := responses.FromUserModel(user)
 		r.Role = role.Name
 
-		response = append(response, r)
+		resp = append(resp, r)
 	}
+
+	response := responses.NewResponse(resp, 200, "success")
 
 	c.JSON(200, response)
 }
@@ -128,17 +130,14 @@ func (ufh *UserFinderHandler) FindRoleById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, role)
+	response := responses.NewResponse(role, 200, "success")
+
+	c.JSON(200, response)
 }
 
 func (ufh *UserFinderHandler) FindRoles(c *gin.Context) {
-	var request resource.QueryRequest
 
-	if err := c.ShouldBind(&request); err != nil {
-		log.Println("[UserFinderHandler-FindRoles] line 97", err)
-		c.JSON(400, common.ErrBadRequest)
-		return
-	}
+	request := resource.NewQueryRequest(c)
 
 	roles, err := ufh.userFinder.FindAllRole(c.Request.Context(), request.Query, request.Sort, request.Order, request.Limit, request.Offset)
 
@@ -148,7 +147,9 @@ func (ufh *UserFinderHandler) FindRoles(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, roles)
+	response := responses.NewResponse(roles, 200, "success")
+
+	c.JSON(200, response)
 }
 
 func (ufh *UserFinderHandler) FindPermissionById(c *gin.Context) {
@@ -166,7 +167,9 @@ func (ufh *UserFinderHandler) FindPermissionById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, permission)
+	response := responses.NewResponse(permission, 200, "success")
+
+	c.JSON(200, response)
 }
 
 func (ufh *UserFinderHandler) FindPermissions(c *gin.Context) {
@@ -177,5 +180,7 @@ func (ufh *UserFinderHandler) FindPermissions(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, permissions)
+	response := responses.NewResponse(permissions, 200, "success")
+
+	c.JSON(200, response)
 }

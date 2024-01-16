@@ -78,7 +78,7 @@ func (repo *RoleRepository) GetAll(ctx context.Context, query, sort, order strin
 	var roles []*model.Role
 	q := repo.db.Preload("RolePermissions").WithContext(ctx).Model(&model.Role{})
 	if query != "" {
-		q = q.Where("name LIKE ?", "%"+query+"%")
+		q = q.Where("name ILIKE ?", "%"+query+"%")
 	}
 	if sort != "" {
 		q = q.Order(sort + " " + order)

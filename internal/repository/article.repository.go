@@ -82,7 +82,7 @@ func (repo *ArticleRepository) GetAll(ctx context.Context, query, sort, order st
 	q := repo.db.WithContext(ctx).Preload("ArticleCategory.Category").Model(&model.Article{})
 
 	if query != "" {
-		q = q.Where("title LIKE ?", "%"+query+"%")
+		q = q.Where("title ILIKE ?", "%"+query+"%")
 	}
 
 	if sort != "" && order != "" {
@@ -104,7 +104,7 @@ func (repo *ArticleRepository) GetAll(ctx context.Context, query, sort, order st
 
 func (r *ArticleRepository) GetById(ctx context.Context, id int) (*model.Article, error) {
 	var article model.Article
-	if err := r.db.WithContext(ctx).Preload("ArticleCategory.Category.Name").Model(&model.Article{}).First(&article, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("ArticleCategory.Category").Model(&model.Article{}).First(&article, id).Error; err != nil {
 		return nil, errors.Wrap(err, "error getting article by id")
 	}
 	return &article, nil
