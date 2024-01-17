@@ -48,6 +48,8 @@ func (gcs *GoogleCloudStorage) UploadFile(file *multipart.FileHeader, folder str
 	}
 
 	objectName := folder + "/" + file.Filename
+	objectName = gcs.generateUniqueObjectName(objectName)
+
 	wc := gcs.bucket.Object(objectName).NewWriter(context.Background())
 
 	src, err := file.Open()
@@ -73,13 +75,15 @@ func (gcs *GoogleCloudStorage) UploadSavedFile(filePath string, folder string) (
 		return "", err
 	}
 
+	objectName := folder + "/" + filepath.Base(filePath)
+	objectName = gcs.generateUniqueObjectName(objectName)
+
 	file, err := os.Open(filePath)
 	if err != nil {
 		return "", fmt.Errorf("failed to open file: %v", err)
 	}
 	defer file.Close()
 
-	objectName := folder + "/" + filepath.Base(filePath)
 	wc := gcs.bucket.Object(objectName).NewWriter(context.Background())
 
 	_, err = io.Copy(wc, file)
@@ -92,6 +96,20 @@ func (gcs *GoogleCloudStorage) UploadSavedFile(filePath string, folder string) (
 	}
 
 	return objectName, nil
+}
+
+func (gcs *GoogleCloudStorage) generateUniqueObjectName(objectName string) string {
+	existingObj := gcs.bucket.Object(objectName)
+	attrs, err := existingObj.Attrs(context.Background())
+	if err != nil {
+		return objectName
+	}
+
+	base := objectName[:len(objectName)-len(filepath.Ext(objectName))]
+	timestamp := attrs.Created.UTC().Format("20060102T150405")
+	extension := filepath.Ext(objectName)
+
+	return fmt.Sprintf("%s_%s%s", base, timestamp, extension)
 }
 
 func (gcs *GoogleCloudStorage) DeleteFile(filePath string) error {
