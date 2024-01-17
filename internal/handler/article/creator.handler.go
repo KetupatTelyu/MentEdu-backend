@@ -29,7 +29,8 @@ func (ach *ArticleCreatorHandler) CreateArticle(c *gin.Context) {
 	var request resource.CreateArticleRequest
 
 	if err := c.ShouldBind(&request); err != nil {
-		responses.NewResponse(nil, 400, err.Error())
+		response := responses.NewResponse(nil, 400, err.Error())
+		c.JSON(400, response)
 		return
 	}
 
