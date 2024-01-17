@@ -14,7 +14,7 @@ type ArticleRepositoryUseCase interface {
 	Create(ctx context.Context, article *model.Article) (*model.Article, error)
 	Update(ctx context.Context, article *model.Article) error
 	Delete(ctx context.Context, id int) error
-	GetAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Article, error)
+	GetAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Article, int64, error)
 	GetById(ctx context.Context, id int) (*model.Article, error)
 	GetBySlug(ctx context.Context, slug string) (*model.Article, error)
 }
@@ -76,8 +76,10 @@ func (r *ArticleRepository) Delete(ctx context.Context, id int) error {
 	return nil
 }
 
-func (repo *ArticleRepository) GetAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Article, error) {
+func (repo *ArticleRepository) GetAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Article, int64, error) {
 	var articles []*model.Article
+
+	var total int64
 
 	q := repo.db.WithContext(ctx).Preload("ArticleCategory.Category").Model(&model.Article{})
 
@@ -96,10 +98,14 @@ func (repo *ArticleRepository) GetAll(ctx context.Context, query, sort, order st
 	}
 
 	if err := q.Find(&articles).Error; err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return articles, nil
+	if err := q.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return articles, total, nil
 }
 
 func (r *ArticleRepository) GetById(ctx context.Context, id int) (*model.Article, error) {

@@ -8,7 +8,7 @@ import (
 
 type ArticleFinderUsecase interface {
 	FindByID(ctx context.Context, id int) (*model.Article, error)
-	FindAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Article, error)
+	FindAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Article, int64, error)
 	FindBySlug(ctx context.Context, slug string) (*model.Article, error)
 
 	FindCategoryByID(ctx context.Context, id int) (*model.Category, error)
@@ -43,14 +43,14 @@ func (af *ArticleFinder) FindByID(ctx context.Context, id int) (*model.Article, 
 	return article, nil
 }
 
-func (af *ArticleFinder) FindAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Article, error) {
-	articles, err := af.articleRepo.GetAll(ctx, query, sort, order, limit, offset)
+func (af *ArticleFinder) FindAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Article, int64, error) {
+	articles, total, err := af.articleRepo.GetAll(ctx, query, sort, order, limit, offset)
 
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return articles, nil
+	return articles, total, nil
 }
 
 func (af *ArticleFinder) FindBySlug(ctx context.Context, slug string) (*model.Article, error) {

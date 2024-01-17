@@ -86,7 +86,7 @@ func (ufh *UserFinderHandler) FindUsers(c *gin.Context) {
 
 	request := resource.NewQueryRequest(c)
 
-	users, err := ufh.userFinder.FindAllUser(c.Request.Context(), request.Query, request.Sort, request.Order, request.Limit, request.Offset)
+	users, total, err := ufh.userFinder.FindAllUser(c.Request.Context(), request.Query, request.Sort, request.Order, request.Limit, request.Offset)
 
 	if err != nil {
 		c.JSON(400, common.ErrBadRequest)
@@ -109,7 +109,7 @@ func (ufh *UserFinderHandler) FindUsers(c *gin.Context) {
 		resp = append(resp, r)
 	}
 
-	response := responses.NewResponse(resp, 200, "success")
+	response := responses.NewPaginatedResponse(resp, 200, "success", total)
 
 	c.JSON(200, response)
 }

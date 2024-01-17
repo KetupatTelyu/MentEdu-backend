@@ -22,7 +22,7 @@ type UserFinderUseCase interface {
 
 	FindPermission(ctx context.Context, permissionID int) (*model.Permission, error)
 
-	FindAllUser(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.User, error)
+	FindAllUser(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.User, int64, error)
 
 	FindAllRole(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Role, error)
 
@@ -75,14 +75,14 @@ func (uf *UserFinder) FindPermission(ctx context.Context, permissionID int) (*mo
 	return permission, nil
 }
 
-func (uf *UserFinder) FindAllUser(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.User, error) {
-	users, err := uf.userRepo.GetAll(ctx, query, sort, order, limit, offset)
+func (uf *UserFinder) FindAllUser(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.User, int64, error) {
+	users, total, err := uf.userRepo.GetAll(ctx, query, sort, order, limit, offset)
 
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return users, nil
+	return users, total, nil
 }
 
 func (uf *UserFinder) FindAllRole(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.Role, error) {

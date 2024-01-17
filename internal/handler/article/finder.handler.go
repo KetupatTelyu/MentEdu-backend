@@ -47,7 +47,7 @@ func (af *ArticleFinder) FindArticles(c *gin.Context) {
 		return
 	}
 
-	articles, err := af.articleFinder.FindAll(c.Request.Context(), request.Query, request.Sort, request.Order, request.Limit, request.Offset)
+	articles, total, err := af.articleFinder.FindAll(c.Request.Context(), request.Query, request.Sort, request.Order, request.Limit, request.Offset)
 
 	if err != nil {
 		c.JSON(400, err)
@@ -78,7 +78,7 @@ func (af *ArticleFinder) FindArticles(c *gin.Context) {
 		articleResponses = append(articleResponses, newArticle)
 	}
 
-	response := article2.NewResponse(articleResponses, http.StatusOK, "success")
+	response := article2.NewPaginatedResponse(articleResponses, http.StatusOK, "success", total)
 
 	c.JSON(200, response)
 }

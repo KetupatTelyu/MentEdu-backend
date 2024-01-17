@@ -15,7 +15,7 @@ type UserRepositoryUseCase interface {
 	Create(ctx context.Context, user *model.User) error
 	Update(ctx context.Context, user *model.User) error
 	Delete(ctx context.Context, id uuid.UUID) error
-	GetAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.User, error)
+	GetAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.User, int64, error)
 	GetById(ctx context.Context, id uuid.UUID) (*model.User, error)
 }
 
@@ -76,8 +76,10 @@ func (r *UserRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (repo *UserRepository) GetAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.User, error) {
+func (repo *UserRepository) GetAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.User, int64, error) {
 	var users []*model.User
+
+	var total int64
 
 	q := repo.db.WithContext(ctx).Preload("UserRole.Role").Model(&model.User{})
 
@@ -96,10 +98,14 @@ func (repo *UserRepository) GetAll(ctx context.Context, query, sort, order strin
 	}
 
 	if err := q.Find(&users).Error; err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return users, nil
+	if err := q.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return users, total, nil
 }
 
 func (r *UserRepository) GetById(ctx context.Context, id uuid.UUID) (*model.User, error) {
