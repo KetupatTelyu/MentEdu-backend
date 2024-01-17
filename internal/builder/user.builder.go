@@ -7,7 +7,7 @@ import (
 	"mentedu-backend/internal/app/config"
 	"mentedu-backend/internal/repository"
 	userService "mentedu-backend/internal/service/user"
-	"mentedu-backend/sdk/local"
+	"mentedu-backend/sdk/gcp"
 )
 
 func BuildUserHandler(cfg config.Config, router *gin.Engine, db *gorm.DB) {
@@ -22,7 +22,11 @@ func BuildUserHandler(cfg config.Config, router *gin.Engine, db *gorm.DB) {
 	ud := userService.NewUserDeleter(ur, urr, rr, rpr, pr)
 	up := userService.NewUserUpdater(ur, rr, pr, urr, rpr)
 
-	cloudStorage := local.NewLocalStorage(cfg.LocalStorage.BasePath)
+	cloudStorage, err := gcp.NewGoogleCloudStorage(cfg.GCPConfig.ProjectID, cfg.GCPConfig.Bucket, cfg.GCPConfig.ServiceAccountPath)
+
+	if err != nil {
+		panic(err)
+	}
 
 	user2.UserCreatorHTTPHandler(cfg, router, uc, uf, cloudStorage)
 	user2.UserFinderHTTPHandler(cfg, router, uc, uf, cloudStorage)

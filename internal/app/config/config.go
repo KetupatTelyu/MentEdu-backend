@@ -15,6 +15,7 @@ type Config struct {
 	Database     Database
 	LocalStorage LocalStorage
 	JWTConfig    JWTConfig
+	GCPConfig    GCPConfig
 	//Redis    Redis
 }
 
@@ -38,6 +39,12 @@ type JWTConfig struct {
 	Private   string `env:"JWT_PRIVATE,required"`
 	Issuer    string `env:"JWT_ISSUER,required"`
 	IssuerCMS string `env:"JWT_ISSUER_CMS,required"`
+}
+
+type GCPConfig struct {
+	ProjectID          string `env:"GCP_PROJECT_ID,required"`
+	Bucket             string `env:"GCP_BUCKET,required"`
+	ServiceAccountPath string `env:"GCP_SERVICE_ACCOUNT_PATH,required"`
 }
 
 //type Redis struct {
@@ -76,6 +83,11 @@ func LoadConfig(path string) Config {
 			Private:   getEnv("JWT_PRIVATE", ""),
 			Issuer:    getEnv("JWT_ISSUER", ""),
 			IssuerCMS: getEnv("JWT_ISSUER_CMS", ""),
+		},
+		GCPConfig: GCPConfig{
+			ProjectID:          getEnv("GCP_PROJECT_ID", ""),
+			Bucket:             getEnv("GCP_BUCKET", ""),
+			ServiceAccountPath: getEnv("GCP_SERVICE_ACCOUNT_PATH", ""),
 		},
 	}
 }

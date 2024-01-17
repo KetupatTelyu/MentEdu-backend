@@ -8,7 +8,7 @@ import (
 	"mentedu-backend/internal/repository"
 	"mentedu-backend/internal/service/article"
 	userService "mentedu-backend/internal/service/user"
-	"mentedu-backend/sdk/local"
+	"mentedu-backend/sdk/gcp"
 )
 
 func BuildArticleHandler(cfg config.Config, router *gin.Engine, db *gorm.DB) {
@@ -21,7 +21,11 @@ func BuildArticleHandler(cfg config.Config, router *gin.Engine, db *gorm.DB) {
 	cr := repository.NewCategoryRepository(db)
 	acr := repository.NewArticleCategoryRepository(db)
 
-	cloudStorage := local.NewLocalStorage(cfg.LocalStorage.BasePath)
+	cloudStorage, err := gcp.NewGoogleCloudStorage(cfg.GCPConfig.ProjectID, cfg.GCPConfig.Bucket, cfg.GCPConfig.ServiceAccountPath)
+
+	if err != nil {
+		panic(err)
+	}
 
 	as := article.NewArticleCreator(cfg, ar, cr, acr, cloudStorage)
 	af := article.NewArticleFinder(ar, cr, acr)

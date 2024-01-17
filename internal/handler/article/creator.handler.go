@@ -37,6 +37,13 @@ func (ach *ArticleCreatorHandler) CreateArticle(c *gin.Context) {
 	imagePath, err := ach.cloudStorage.UploadFile(request.Image, "articles/article/image")
 
 	if err != nil {
+		err := ach.cloudStorage.DeleteFile(imagePath)
+
+		if err != nil {
+			responses.NewResponse(nil, 400, err.Error())
+			return
+		}
+
 		responses.NewResponse(nil, 400, err.Error())
 		return
 	}
@@ -44,6 +51,7 @@ func (ach *ArticleCreatorHandler) CreateArticle(c *gin.Context) {
 	user, err := ach.userFinder.FindUser(c, middleware.UserID)
 
 	if err != nil {
+		c.JSON(400, common.ErrBadRequest)
 		return
 	}
 
