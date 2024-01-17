@@ -29,28 +29,27 @@ func (ach *ArticleCreatorHandler) CreateArticle(c *gin.Context) {
 	var request resource.CreateArticleRequest
 
 	if err := c.ShouldBind(&request); err != nil {
-		c.JSON(400, common.ErrBadRequest)
+		responses.NewResponse(nil, 400, err.Error())
 		return
 	}
 
 	imagePath, err := ach.cloudStorage.UploadFile(request.Image, "articles/article/image")
 
 	if err != nil {
-		c.JSON(400, common.ErrBadRequest)
+		responses.NewResponse(nil, 400, err.Error())
 		return
 	}
 
 	user, err := ach.userFinder.FindUser(c, middleware.UserID)
 
 	if err != nil {
-		c.JSON(400, common.ErrBadRequest)
 		return
 	}
 
 	a, err := ach.articleCreatorUsecase.CreateArticle(c.Request.Context(), request.Title, request.Body, request.Slug, imagePath, request.CategoryID, user.Email)
 
 	if err != nil {
-		c.JSON(400, common.ErrBadRequest)
+		responses.NewResponse(nil, 400, err.Error())
 		return
 	}
 
