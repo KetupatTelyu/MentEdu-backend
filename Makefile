@@ -35,7 +35,6 @@ force_version:
 
 setup:
 	mkdir -p bin/server
-	mkdir -p media/users/user/profile
 
 generate-keys:
 	mkdir -p keys

@@ -12,6 +12,7 @@ type ArticleCreatorUsecase interface {
 	CreateArticle(ctx context.Context, title, body, slug, image string, categoryID int, createdBy string) (*model.Article, error)
 	CreateCategory(ctx context.Context, name, createdBy string) error
 	CreateArticleCategory(ctx context.Context, articleID, categoryID int, createdBy string) error
+	CreateConsultant(ctx context.Context, consultant *model.Consultant) error
 }
 
 type ArticleCreator struct {
@@ -69,5 +70,9 @@ func (ac *ArticleCreator) CreateArticleCategory(ctx context.Context, articleID, 
 		return err
 	}
 
+	return nil
+}
+
+func (ac *ArticleCreator) CreateConsultant(ctx context.Context, consultant *model.Consultant) error {
 	return nil
 }
