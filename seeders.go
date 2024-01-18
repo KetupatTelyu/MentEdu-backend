@@ -173,6 +173,56 @@ func main() {
 		log.Fatal(err)
 	}
 
+	consultant := User{
+		ID:          uuid.New(),
+		Name:        "Consultant",
+		Email:       "consultant@mail.com",
+		Password:    "consultantpassword",
+		PhoneNumber: "1234567890",
+		CreatedBy:   "seeder",
+		UpdatedBy:   "seeder",
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	consultant.Password, _ = utils.HashPassword(consultant.Password)
+
+	err = db.Create(&consultant).Error
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	consultantRole := Role{
+		Name:      "consultant",
+		CreatedBy: "seeder",
+		UpdatedBy: "seeder",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	err = db.Create(&consultantRole).Error
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	consultantUserRole := UserRole{
+		ID:        uuid.New(),
+		UserID:    consultant.ID,
+		RoleID:    consultantRole.ID,
+		CreatedBy: "seeder",
+		UpdatedBy: "seeder",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	err = db.Create(&consultantUserRole).Error
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Define permissions
 	readPermission := Permission{
 		Name:      "read",
@@ -241,6 +291,10 @@ func main() {
 	assignPermissions(db, adminRole.ID, deletePermission.ID)
 	assignPermissions(db, adminRole.ID, updatePermission.ID)
 	assignPermissions(db, normalRole.ID, readPermission.ID)
+	assignPermissions(db, normalRole.ID, writePermission.ID)
+	assignPermissions(db, normalRole.ID, deletePermission.ID)
+	assignPermissions(db, normalRole.ID, updatePermission.ID)
+	assignPermissions(db, consultantRole.ID, readPermission.ID)
 
 	fmt.Println("Seeder executed successfully")
 }

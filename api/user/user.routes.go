@@ -39,6 +39,10 @@ func UserFinderHTTPHandler(cfg config.Config, router *gin.Engine, uc userService
 
 	api := router.Group("/api")
 
+	{
+		api.GET("/user/user_role/:id", hndlr.FindUsersByRoleID)
+	}
+
 	api.Use(middleware.Auth(cfg))
 	api.Use(middleware.Admin(cfg))
 	{

@@ -41,6 +41,9 @@ generate-keys:
 	mkdir -p keys
 	openssl rsa -pubout -in ./keys/private_key.pem -out ./keys/public_key.pem
 
+seed:
+	go run seeders.go
+
 .PHONY: compile-server
 compile-server:
 	GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o ./bin/server ./cmd/server/main.go

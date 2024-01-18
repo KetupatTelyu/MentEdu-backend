@@ -64,3 +64,33 @@ func Admin(cfg config.Config) gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func Consultant(cfg config.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenString := strings.Split(c.Request.Header.Get("Authorization"), "Bearer ")
+
+		if len(tokenString) < 2 {
+			c.JSON(http.StatusUnauthorized, utils.ErrorApiResponse(http.StatusUnauthorized, "unauthorized"))
+			c.Abort()
+			return
+		}
+
+		claims, err := utils.JWTDecode(cfg, tokenString[1])
+
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, utils.ErrorApiResponse(http.StatusUnauthorized, err.Error()))
+			c.Abort()
+			return
+		}
+
+		if claims.Role != "consultant" {
+			c.JSON(http.StatusUnauthorized, utils.ErrorApiResponse(http.StatusUnauthorized, "unauthorized"))
+			c.Abort()
+			return
+		}
+
+		UserID = claims.Subject
+
+		c.Next()
+	}
+}

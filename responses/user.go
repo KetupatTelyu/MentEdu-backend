@@ -11,7 +11,6 @@ type ProfileResponse struct {
 	ID          uuid.UUID    `json:"id"`
 	Name        string       `json:"name"`
 	Email       string       `json:"email"`
-	Password    string       `json:"password"`
 	PhoneNumber string       `json:"phone_number"`
 	Photo       string       `json:"photo"`
 	DOB         sql.NullTime `json:"dob"`
@@ -24,7 +23,6 @@ func FromUserModel(m *model.User) *ProfileResponse {
 		ID:          m.ID,
 		Name:        m.Name,
 		Email:       m.Email,
-		Password:    m.Password,
 		PhoneNumber: m.PhoneNumber,
 		Photo:       m.Photo,
 		DOB:         m.DOB,

@@ -24,6 +24,7 @@ type TokenClaims struct {
 	NotBefore int64     `json:"nbf,omitempty"`
 	Subject   uuid.UUID `json:"sub,omitempty"`
 	Issuer    string    `json:"iss,omitempty"`
+	Role      string    `json:"role,omitempty"`
 	jwt.StandardClaims
 }
 
@@ -61,7 +62,7 @@ func JWTDecode(cfg config.Config, t string) (*TokenClaims, error) {
 }
 
 // JWTEncode encode token claims to JWT
-func JWTEncode(cfg config.Config, id uuid.UUID, iss string) (string, error) {
+func JWTEncode(cfg config.Config, id uuid.UUID, iss string, role string) (string, error) {
 	if cfg.JWTConfig.Private == "" {
 		return "", fmt.Errorf("please specify your public key path")
 	}
@@ -71,12 +72,13 @@ func JWTEncode(cfg config.Config, id uuid.UUID, iss string) (string, error) {
 	jti := hex.EncodeToString(hashQuery.Sum(nil))
 
 	sign := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-		"iat": time.Now().Unix(),
-		"nbf": time.Now().Unix(),
-		"exp": time.Now().Add(time.Hour * 24 * 365).Unix(),
-		"jti": jti,
-		"sub": id,
-		"iss": iss,
+		"iat":  time.Now().Unix(),
+		"nbf":  time.Now().Unix(),
+		"exp":  time.Now().Add(time.Hour * 24 * 365).Unix(),
+		"jti":  jti,
+		"sub":  id,
+		"iss":  iss,
+		"role": role,
 	})
 
 	privateKey, readErr := ioutil.ReadFile(cfg.JWTConfig.Private)

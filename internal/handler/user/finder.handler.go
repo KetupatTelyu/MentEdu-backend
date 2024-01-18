@@ -184,3 +184,39 @@ func (ufh *UserFinderHandler) FindPermissions(c *gin.Context) {
 
 	c.JSON(200, response)
 }
+
+func (ufh *UserFinderHandler) FindUsersByRoleID(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(400, common.ErrBadRequest)
+		return
+	}
+
+	users, err := ufh.userFinder.FindAllUsersByRoleID(c.Request.Context(), id)
+
+	if err != nil {
+		c.JSON(400, common.ErrBadRequest)
+		return
+	}
+
+	var resp []*responses.ProfileResponse
+
+	for _, user := range users {
+		role, err := ufh.userFinder.FindRole(c.Request.Context(), id)
+
+		if err != nil {
+			c.JSON(400, common.ErrBadRequest)
+			return
+		}
+
+		r := responses.FromUserModel(user)
+		r.Role = role.Name
+
+		resp = append(resp, r)
+	}
+
+	response := responses.NewResponse(resp, 200, "success")
+
+	c.JSON(200, response)
+}

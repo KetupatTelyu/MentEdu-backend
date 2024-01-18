@@ -50,4 +50,5 @@ func BuildHandler(cfg config.Config, router *gin.Engine, db *gorm.DB) {
 	builder.BuildAuthHandler(cfg, router, db)
 	builder.BuildUserHandler(cfg, router, db)
 	builder.BuildArticleHandler(cfg, router, db)
+	builder.BuildConsultationHandler(cfg, router, db)
 }

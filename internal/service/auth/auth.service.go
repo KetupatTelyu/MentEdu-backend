@@ -43,7 +43,7 @@ func (as *AuthService) Login(ctx context.Context, email, password string) (*stri
 		iss = "cms"
 	}
 
-	jwtToken, err := utils.JWTEncode(as.cfg, user.ID, iss)
+	jwtToken, err := utils.JWTEncode(as.cfg, user.ID, iss, user.UserRole.Role.Name)
 
 	if err != nil {
 		return nil, err

@@ -17,6 +17,7 @@ type UserRepositoryUseCase interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 	GetAll(ctx context.Context, query, sort, order string, limit, offset int) ([]*model.User, int64, error)
 	GetById(ctx context.Context, id uuid.UUID) (*model.User, error)
+	GetUsersByRoleID(ctx context.Context, roleID int) ([]*model.User, error)
 }
 
 type UserRepository struct {
@@ -114,4 +115,22 @@ func (r *UserRepository) GetById(ctx context.Context, id uuid.UUID) (*model.User
 		return nil, errors.Wrap(err, "error getting user by id")
 	}
 	return &user, nil
+}
+
+func (repo *UserRepository) GetUsersByRoleID(ctx context.Context, roleID int) ([]*model.User, error) {
+	var users []*model.User
+
+	rawSQL := `
+		SELECT users.*
+		FROM users
+		INNER JOIN user_roles ON users.id = user_roles.user_id
+		WHERE user_roles.role_id = ?;
+	`
+
+	result := repo.db.WithContext(ctx).Raw(rawSQL, roleID).Scan(&users)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return users, nil
 }
