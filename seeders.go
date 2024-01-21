@@ -3,10 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
 	"mentedu-backend/utils"
+	"os"
 	"time"
 )
 
@@ -92,7 +94,8 @@ type ArticleCategory struct {
 }
 
 func main() {
-	dsn := "postgres://localhost:5432/mentedudb?user=rahman&password=rahman&sslmode=disable"
+	godotenv.Load(".env")
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Jakarta", os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"))
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)

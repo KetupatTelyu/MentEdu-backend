@@ -7,6 +7,7 @@ Hacker: Rahman Hakim
 
 ### Api Collection
 ![img.png](assets/img.png)
+![img.png](assets/img2.png)
 
 ## How to run
 ### 1. Install dependencies
@@ -40,7 +41,7 @@ make generate-keys
 
 ### 9. Seed Database
 ```bash
-make seed DATABASE_URL=<database_url>
+make seed
 ```
 
 ### 10. Build
